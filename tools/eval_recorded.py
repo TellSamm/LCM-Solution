@@ -25,7 +25,8 @@ def read(bag, topics):
 def stamp(m): return m.header.stamp.sec + m.header.stamp.nanosec * 1e-9
 
 def main(inp, res, node_log=None, res_log=None):
-    ref = read(inp, ["/sensing/gnss/master/fix", "/sensing/gnss/rover/fix", "/sensing/gnss/master/vel", "/sensing/gnss/rover/vel"])
+    ref = read(inp, ["/sensing/gnss/master/fix", "/sensing/gnss/rover/fix", "/sensing/gnss/master/vel", "/sensing/gnss/rover/vel", "/localization/kinematic_state"])
+    kin = ref.get("/localization/kinematic_state") or []
     out = read(res, ["/result/velocity", "/result/position"])
     V = out["/result/velocity"]; P = out["/result/position"]
     if not P: print("ОШИБКА: выходные сообщения не записаны"); return
@@ -55,29 +56,38 @@ def main(inp, res, node_log=None, res_log=None):
         print(f"   память ноды (макс RSS)                 <= 512 МБ         {rss:6.1f} МБ       {ok(rss <= 512)}")
     fixm = ref["/sensing/gnss/master/fix"] or ref["/sensing/gnss/rover/fix"]; fixr = ref["/sensing/gnss/rover/fix"]
     vel = ref["/sensing/gnss/master/vel"] or ref["/sensing/gnss/rover/vel"]
-    if len(fixm) < 10:
-        print("\n ТОЧНОСТЬ: в этом bag нет GNSS-эталона - метрики точности недоступны (выходы записаны в results/)"); print("=" * 78); return
-    tm = np.array([stamp(m) for m in fixm]); xm, ym = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixm]).T
-    if len(fixr) > 10 and ref["/sensing/gnss/master/fix"]:
-        tr = np.array([stamp(m) for m in fixr]); xr0, yr0 = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixr]).T
-        xr = np.interp(tm, tr, xr0); yr = np.interp(tm, tr, yr0); xb = xr + (xm - xr) * FR; yb = yr + (ym - yr) * FR
+    if len(kin) >= 10:
+        # the jury's reference (/localization/kinematic_state, 50 Hz, frame map == pathgraph frame): use it directly,
+        # exactly like the organizers' checker; GNSS is only a fallback for the training bags that lack it
+        ref_label = "/localization/kinematic_state (эталон судьи)"
+        tm = np.array([stamp(m) for m in kin]); xb = np.array([m.pose.pose.position.x for m in kin]); yb = np.array([m.pose.pose.position.y for m in kin]); zb = np.array([m.pose.pose.position.z for m in kin])
+        tv = tm; sv = np.array([m.twist.twist.linear.x for m in kin])
+    elif len(fixm) < 10:
+        print("\n ТОЧНОСТЬ: в этом bag нет ни kinematic_state, ни GNSS - метрики точности недоступны (выходы записаны в results/)"); print("=" * 78); return
     else:
-        xb, yb = xm, ym
-    xb -= X0; yb -= Y0
-    zb = np.array([m.altitude for m in fixm]) - 3.0     # antenna height above base_link (rail head): GNSS alt - 3.0 matches pathgraph z within 0.1 m
-    # velocity
-    tv = np.array([stamp(m) for m in vel]); sv = np.array([math.hypot(m.twist.linear.x, m.twist.linear.y) for m in vel])
+        ref_label = "GNSS, base_link по двум антеннам"
+        tm = np.array([stamp(m) for m in fixm]); xm, ym = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixm]).T
+        if len(fixr) > 10 and ref["/sensing/gnss/master/fix"]:
+            tr = np.array([stamp(m) for m in fixr]); xr0, yr0 = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixr]).T
+            xr = np.interp(tm, tr, xr0); yr = np.interp(tm, tr, yr0); xb = xr + (xm - xr) * FR; yb = yr + (ym - yr) * FR
+        else:
+            xb, yb = xm, ym
+        xb -= X0; yb -= Y0
+        zb = np.array([m.altitude for m in fixm]) - 3.0     # antenna height above base_link (rail head): GNSS alt - 3.0 matches pathgraph z within 0.1 m
+        tv = np.array([stamp(m) for m in vel]); sv = np.array([math.hypot(m.twist.linear.x, m.twist.linear.y) for m in vel])
+    # velocity: nearest reference sample within 0.05 s (no interpolation across reference gaps)
     tV = np.array([stamp(m) for m in V]); vV = np.array([m.velocity for m in V])
-    okv = (tV >= tv[0]) & (tV <= tv[-1]); e = vV[okv] - np.interp(tV[okv], tv, sv)
+    iv = np.clip(np.searchsorted(tv, tV), 1, len(tv) - 1); nv = np.where(np.abs(tv[iv] - tV) < np.abs(tv[iv - 1] - tV), iv, iv - 1)
+    okv = np.abs(tv[nv] - tV) < 0.05; e = vV[okv] - sv[nv][okv]
     # position: nearest stamp within 0.05 s
     px = np.array([m.pose.pose.position.x for m in P]); py = np.array([m.pose.pose.position.y for m in P]); pz = np.array([m.pose.pose.position.z for m in P])
     idx = np.clip(np.searchsorted(tm, tP), 1, len(tm) - 1)
     near = np.where(np.abs(tm[idx] - tP) < np.abs(tm[idx - 1] - tP), idx, idx - 1); okp = np.abs(tm[near] - tP) < 0.05
     e2 = np.hypot(px[okp] - xb[near][okp], py[okp] - yb[near][okp]); ez = pz[okp] - zb[near][okp]; e3 = np.sqrt(e2 ** 2 + ez ** 2)
-    dist = np.trapz(sv, tv) if hasattr(np, "trapz") else np.trapezoid(sv, tv)
+    dt = np.diff(tv); dist = float(np.sum(0.5 * (sv[1:] + sv[:-1]) * np.where(dt < 2.0, dt, 0.0)))   # travelled distance, gaps in the reference ignored
     print()
-    print(" ТОЧНОСТЬ ОТНОСИТЕЛЬНО GNSS-ЭТАЛОНА (эталон: base_link по двум антеннам; сопоставление по метке времени, допуск 0.05 с)")
-    print(f"   скорость: RMSE {np.sqrt(np.mean(e**2)):.3f} м/с   MAE {np.mean(np.abs(e)):.3f} м/с   смещение {np.mean(e):+.3f} м/с   (сопоставлено {okv.sum()} сообщений)")
+    print(f" ТОЧНОСТЬ ОТНОСИТЕЛЬНО ЭТАЛОНА (эталон: {ref_label}; сопоставление по метке времени, допуск 0.05 с)")
+    print(f"   скорость: RMSE {np.sqrt(np.mean(e**2)):.3f} м/с   MAE {np.mean(np.abs(e)):.3f} м/с   смещение {np.mean(e):+.3f} м/с   (сопоставлено {okv.sum()} сообщений, {okv.mean()*100:.0f} %)")
     print(f"   положение (2D): средняя {e2.mean():.1f} м   медиана {np.median(e2):.1f} м   RMSE {np.sqrt((e2**2).mean()):.1f} м   максимум {e2.max():.1f} м   (сопоставлено {okp.mean()*100:.0f} % сообщений)")
     print(f"   положение (3D, с высотой): средняя {e3.mean():.1f} м   RMSE {np.sqrt((e3**2).mean()):.1f} м   максимум {e3.max():.1f} м   |ошибка z| средняя {np.abs(ez).mean():.1f} м")
     print(f"   конец прогона: ошибка {e2[-1]:.1f} м (3D {e3[-1]:.1f} м) после {dist:.0f} м пути  ->  накопленный дрейф {100*e2[-1]/max(dist,1):.2f} % дистанции")
