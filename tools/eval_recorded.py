@@ -42,7 +42,7 @@ def main(inp, res, node_log=None, res_log=None):
         if R: cpu = sum(float(r[1][4:-1]) for r in R) / len(R); rss = max(float(r[2][4:-2]) for r in R)
     ok = lambda c: "OK" if c else "НЕТ"
     print()
-    print("=" * 78); print(" ИТОГ ПРОВЕРКИ — LCM Solution / tram_odometry"); print("=" * 78)
+    print("=" * 78); print(" ИТОГ ПРОВЕРКИ - LCM Solution / tram_odometry"); print("=" * 78)
     print(f" Прогон: {inp.rstrip('/').split('/')[-1]}   длительность {dur:.0f} с   записано сообщений: {len(V)} velocity, {len(P)} position")
     print()
     print(" РЕАЛЬНОЕ ВРЕМЯ И РЕСУРСЫ                 требование        измерено        статус")
@@ -56,7 +56,7 @@ def main(inp, res, node_log=None, res_log=None):
     fixm = ref["/sensing/gnss/master/fix"] or ref["/sensing/gnss/rover/fix"]; fixr = ref["/sensing/gnss/rover/fix"]
     vel = ref["/sensing/gnss/master/vel"] or ref["/sensing/gnss/rover/vel"]
     if len(fixm) < 10:
-        print("\n ТОЧНОСТЬ: в этом bag нет GNSS-эталона — метрики точности недоступны (выходы записаны в results/)"); print("=" * 78); return
+        print("\n ТОЧНОСТЬ: в этом bag нет GNSS-эталона - метрики точности недоступны (выходы записаны в results/)"); print("=" * 78); return
     tm = np.array([stamp(m) for m in fixm]); xm, ym = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixm]).T
     if len(fixr) > 10 and ref["/sensing/gnss/master/fix"]:
         tr = np.array([stamp(m) for m in fixr]); xr0, yr0 = np.array([latlon_to_utm37(m.latitude, m.longitude) for m in fixr]).T

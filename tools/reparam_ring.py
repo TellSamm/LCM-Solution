@@ -7,15 +7,15 @@ import sys, json
 from pathlib import Path
 import numpy as np, pandas as pd, yaml
 from scipy.spatial import cKDTree
-sys.path.insert(0, str(Path(__file__).parent)); sys.path.insert(0, str(Path(__file__).parents[2] / "tools"))
+sys.path.insert(0, str(Path(__file__).parent))
 import build_map as bm
 from cache import load_all
-ROOT = bm.ROOT; ASSETS = ROOT / "LCM-Solution/ros2_ws/src/tram_odometry/assets"
+from paths import TABLES, ASSETS
 BIN = 20
 
 def main():
     R = json.load(open(ASSETS / "track_ring.json")); rx, ry, rz = map(np.asarray, (R["x"], R["y"], R["z"])); n = len(rx); tree = cKDTree(np.c_[rx, ry])
-    summ = pd.read_csv(ROOT / "notes/bags_summary.csv"); use = summ[(summ.m_cov >= 99) & (summ.dur_s > 600)].drop_duplicates("sig")
+    summ = pd.read_csv(TABLES / "bags_summary.csv"); use = summ[(summ.m_cov >= 99) & (summ.dur_s > 600)].drop_duplicates("sig")
     sumD = np.zeros(n // BIN + 1); sumK = np.zeros(n // BIN + 1); nb = np.zeros(n // BIN + 1)
     for b in use.bag:
         cal = yaml.safe_load(open(ASSETS / f"calib_{b[:5]}.yaml")); scale = cal["wheel_scale_front"]

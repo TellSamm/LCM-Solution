@@ -5,12 +5,13 @@ from pathlib import Path
 import numpy as np, pandas as pd
 from scipy.spatial import cKDTree
 from scipy.ndimage import uniform_filter1d
-sys.path.insert(0, str(Path(__file__).parent)); sys.path.insert(0, str(Path(__file__).parents[2] / "tools"))
+sys.path.insert(0, str(Path(__file__).parent))
 import build_map as bm
 from cache import load_all
-ASSETS = bm.ROOT / "LCM-Solution/ros2_ws/src/tram_odometry/assets"; P = ASSETS / "track_ring.json"
+from paths import TABLES, ASSETS
+P = ASSETS / "track_ring.json"
 R = json.load(open(P)); rx, ry, rz = map(np.asarray, (R["x"], R["y"], R["z"])); mk = R["markers"]; n = len(rx); tree = cKDTree(np.c_[rx, ry])
-summ = pd.read_csv(bm.ROOT / "notes/bags_summary.csv"); use = summ[(summ.m_cov >= 99) & (summ.dur_s > 600) & (summ.tram == 30618)].drop_duplicates("sig")
+summ = pd.read_csv(TABLES / "bags_summary.csv"); use = summ[(summ.m_cov >= 99) & (summ.dur_s > 600) & (summ.tram == 30618)].drop_duplicates("sig")
 sums = np.zeros(n); cnt = np.zeros(n); vals = [[] for _ in range(n // 10 + 1)]
 for b in use.bag:
     t, x, y, z, sp, wsp = bm.baselink_track(load_all(b)); d, k = tree.query(np.c_[x, y]); m = (d < 3) & (sp > 0.7)

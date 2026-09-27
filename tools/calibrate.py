@@ -5,9 +5,8 @@ Writes ros2_ws/src/tram_odometry/assets/calib_<tram>.yaml and calib_default.yaml
 import sys, json
 from pathlib import Path
 import numpy as np, pandas as pd, yaml
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "tools"))
-ASSETS = ROOT / "LCM-Solution/ros2_ws/src/tram_odometry/assets"
+sys.path.insert(0, str(Path(__file__).parent))
+from paths import ASSETS, CACHE
 V_EDGES = np.arange(0, 17, 1.0)                 # speed bins 0..16 m/s, 1 m/s wide
 V_CENTERS = (V_EDGES[:-1] + V_EDGES[1:]) / 2
 NOTCHES = list(range(-15, 16))
@@ -20,7 +19,7 @@ def fill_table(tab):
     return tab.fillna(0.0)
 
 def main():
-    D = pd.read_parquet(ROOT / "cache/dyn10hz.parquet")
+    D = pd.read_parquet(CACHE / "dyn10hz.parquet")
     D["vbin"] = pd.cut(D.v, V_EDGES, labels=False, include_lowest=True)
     out_all = {}
     for tram, X in list(D.groupby("tram")) + [("default", D)]:

@@ -4,14 +4,15 @@ from pathlib import Path
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 sys.path.insert(0, str(Path(__file__).parent))
-from evaluate import run_bag, ROOT, REPO
+from evaluate import run_bag
+from paths import REPO, TABLES
 IMG = REPO / "docs/img"; IMG.mkdir(exist_ok=True)
 
 def fig_velocity(bag="30618_0e41eac3"):
     r, O = run_bag(bag, verbose=True); t = O.t - O.t.iloc[0]
     fig, ax = plt.subplots(2, 1, figsize=(14, 7), sharex=True, gridspec_kw=dict(height_ratios=[3, 1]))
     ax[0].plot(t, O.vref, "k", lw=1.2, label="GNSS (эталон)"); ax[0].plot(t, O.v, "r", lw=0.8, alpha=0.8, label="оценка /result/velocity")
-    ax[0].set_ylabel("скорость, м/с"); ax[0].legend(); ax[0].set_title(f"{bag}: скорость — RMSE {r['v_rmse']:.3f} м/с, bias {r['v_bias']:+.3f} м/с"); ax[0].grid(alpha=.3)
+    ax[0].set_ylabel("скорость, м/с"); ax[0].legend(); ax[0].set_title(f"{bag}: скорость - RMSE {r['v_rmse']:.3f} м/с, bias {r['v_bias']:+.3f} м/с"); ax[0].grid(alpha=.3)
     ax[1].plot(t, O.v - O.vref, "b", lw=0.6); ax[1].set_ylim(-1, 1); ax[1].set_ylabel("ошибка, м/с"); ax[1].set_xlabel("время, с"); ax[1].grid(alpha=.3)
     ax[1].step(t, O.notch / 15, "g", lw=0.5, alpha=0.5, label="позиция контроллера /15"); ax[1].legend(loc="upper right")
     plt.tight_layout(); plt.savefig(IMG / "velocity_tracking.png", dpi=100); plt.close()
@@ -47,7 +48,7 @@ def fig_anomalies(bag="30618_0e41eac3"):
     plt.tight_layout(); plt.savefig(IMG / "anomalies.png", dpi=100); plt.close()
 
 def fig_summary():
-    R = pd.read_csv(ROOT / "notes/eval_v3.csv")
+    R = pd.read_csv(TABLES / "eval_final.csv")
     fig, axs = plt.subplots(1, 3, figsize=(15, 4))
     for ax, col, lab in zip(axs, ["v_rmse", "pos_mean", "drift_pct"], ["RMSE скорости, м/с", "средняя ошибка положения, м", "дрейф в конце, % дистанции"]):
         for tram, c in [("30618", "tab:blue"), ("30639", "tab:orange")]:

@@ -1,7 +1,7 @@
 FROM ros:humble-ros-base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-pip python3-numpy python3-yaml \
+        python3-yaml \
         ros-humble-rosbag2-storage-default-plugins ros-humble-rosbag2 \
         ros-humble-nav-msgs ros-humble-sensor-msgs ros-humble-geometry-msgs \
     && rm -rf /var/lib/apt/lists/*

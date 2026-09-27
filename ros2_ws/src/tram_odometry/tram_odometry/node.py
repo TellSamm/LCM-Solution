@@ -97,7 +97,7 @@ class OdometryNode(Node):
         t = stamp_to_sec(msg.header.stamp)
         if self.first_input_t is None or self.est.initialized: return
         # GNSS is accepted for the initial alignment only: within gnss_init_seconds of the first input, or for as long
-        # as the tram has not started moving yet (still standing at the terminus) — never after motion has begun.
+        # as the tram has not started moving yet (still standing at the terminus) - never after motion has begun.
         if t - self.first_input_t > self.gnss_init_seconds and self.est.moved: return
         if not (math.isfinite(msg.latitude) and math.isfinite(msg.longitude)) or msg.latitude == 0.0: return
         e, n = latlon_to_utm37(msg.latitude, msg.longitude)

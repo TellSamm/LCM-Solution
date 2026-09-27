@@ -4,8 +4,9 @@ velocity RMSE/MAE/bias, 2D/3D position error mean/max/RMSE, final drift (% of di
 import sys, argparse, json
 from pathlib import Path
 import numpy as np, pandas as pd
-ROOT = Path(__file__).resolve().parents[2]; REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools")); sys.path.insert(0, str(REPO / "ros2_ws/src/tram_odometry"))
+sys.path.insert(0, str(Path(__file__).parent))
+from paths import REPO, TABLES, ASSETS
+sys.path.insert(0, str(REPO / "ros2_ws/src/tram_odometry"))
 from cache import load_all
 from tram_odometry.trackmap import TrackMap
 from tram_odometry.traction import TractionModel
@@ -13,7 +14,6 @@ from tram_odometry.estimator import Estimator, Params
 from pyproj import Transformer
 TR = Transformer.from_crs("EPSG:4326", "EPSG:32637", always_xy=True)
 X0, Y0 = 300000.0, 6100000.0
-ASSETS = REPO / "ros2_ws/src/tram_odometry/assets"
 ANT_M, ANT_R = -9.873, 2.563; FR = ANT_R / (ANT_R - ANT_M)
 
 def to_xy(df):
@@ -106,7 +106,7 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--bags", nargs="*"); ap.add_argument("--all", action="store_true"); ap.add_argument("--calib", default="auto")
     ap.add_argument("--gnss-init", type=float, default=5.0); ap.add_argument("--save", default=None); ap.add_argument("--anomaly", default=None)
     a = ap.parse_args()
-    summ = pd.read_csv(ROOT / "notes/bags_summary.csv")
+    summ = pd.read_csv(TABLES / "bags_summary.csv")
     bags = a.bags or (summ[(summ.m_cov >= 99) & (summ.dur_s > 600)].drop_duplicates("sig").bag.tolist() if a.all else ["30618_0e41eac3", "30639_d601d28f", "30618_2050d396"])
     rows = []
     for b in bags:

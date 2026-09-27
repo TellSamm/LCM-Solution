@@ -12,16 +12,16 @@ from pathlib import Path
 import numpy as np, pandas as pd
 from scipy.ndimage import uniform_filter1d
 from scipy.spatial import cKDTree
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(Path(__file__).parent))
 from cache import load_all
+from paths import TABLES, ASSETS, REPO
 from pyproj import Transformer
 TR = Transformer.from_crs("EPSG:4326", "EPSG:32637", always_xy=True)
 X0, Y0 = 300000.0, 6100000.0
 ANT_M, ANT_R = -9.873, 2.563
 FR = ANT_R / (ANT_R - ANT_M)
-DOCS = ROOT / "DocsDataFiles"
-OUT = ROOT / "LCM-Solution/ros2_ws/src/tram_odometry/assets/track_ring.json"
+DOCS = REPO / "tools" / "data"      # pathgraph JSONs from the organizers
+OUT = ASSETS / "track_ring.json"
 STOPS = {"S": np.array([103634.0, 86057.0]), "T": np.array([99015.0, 84949.0])}
 
 def load_path(name):
@@ -69,7 +69,7 @@ def smooth_xy(P, w=7):
 def main():
     PA, PB = load_path("щукинская - таллинская.json"), load_path("таллинская - щукинская.json")
     treeA, treeB = cKDTree(PA[:, :2]), cKDTree(PB[:, :2])
-    summ = pd.read_csv(ROOT / "notes/bags_summary.csv")
+    summ = pd.read_csv(TABLES / "bags_summary.csv")
     use = summ[(summ.m_cov >= 99) & (summ.dur_s > 600)].drop_duplicates("sig")
     pieces = {"S_tail": [], "S_head": [], "T_tail": [], "T_head": []}
     offmap_pts = {"S": [], "T": []}

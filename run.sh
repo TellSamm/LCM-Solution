@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# LCM Solution — one-command launcher (Linux / macOS / Git Bash).
+# LCM Solution - one-command launcher (Linux / macOS / Git Bash).
 #   ./run.sh judge <path/to/bag_dir> [tram_id] [rate]   # node + bag play + record + metrics + resources
-#   ./run.sh node  [tram_id]                            # only the node (host network) — play bags / judge from the host
+#   ./run.sh node  [tram_id]                            # only the node (host network) - play bags / judge from the host
 #   ./run.sh shell                                      # interactive shell inside the image
 # Uses the prebuilt image ghcr.io/tellsamm/lcm-odometry (pulled automatically); falls back to a local build.
 set -e
@@ -19,12 +19,12 @@ case "${1:-}" in
     if [ -z "${2:-}" ] || [ ! -d "$2" ]; then
       echo "ОШИБКА: папка прогона не найдена: '${2:-}'"
       echo "Укажите путь к папке ОДНОГО прогона на вашем диске (в ней лежат <имя>_0.db3 и metadata.yaml), например:"
-      echo "Путь внутрь архива (.../data.zip/...) не подходит — сначала распакуйте архив."
+      echo "Путь внутрь архива (.../data.zip/...) не подходит - сначала распакуйте архив."
       echo "  ./run.sh judge /home/user/hackathon/data/30618_0e41eac3"
       echo "  ./run.sh judge /c/hackathon/data/30618_0e41eac3        (Git Bash на Windows)"
       exit 1
     fi
-    [ -f "$2/metadata.yaml" ] || { echo "ОШИБКА: в '$2' нет metadata.yaml — это не папка прогона. Нужна папка вида .../30618_0e41eac3"; exit 1; }
+    [ -f "$2/metadata.yaml" ] || { echo "ОШИБКА: в '$2' нет metadata.yaml - это не папка прогона. Нужна папка вида .../30618_0e41eac3"; exit 1; }
     BAG=$(cd "$2" && pwd -P)
     PARENT=$(dirname "$BAG"); NAME=$(basename "$BAG"); TRAM=${3:-30618}; RATE=${4:-1.0}
     if command -v cygpath >/dev/null 2>&1; then PARENT=$(cygpath -w "$PARENT"); OUT=$(cygpath -w "$PWD/results"); export MSYS_NO_PATHCONV=1; else OUT="$PWD/results"; fi

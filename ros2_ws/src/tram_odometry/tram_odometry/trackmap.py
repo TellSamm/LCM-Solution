@@ -1,13 +1,12 @@
 """Ring track map: 1 m-spaced closed polyline (A track + loops + B track) in the local metric
 frame (UTM 37N minus (300000, 6100000)) with z, heading, curvature, grade per point."""
 import json, math
-import numpy as np
 
 class TrackMap:
     def __init__(self, path):
         d = json.load(open(path))
-        self.x = np.asarray(d["x"]); self.y = np.asarray(d["y"]); self.z = np.asarray(d["z"])
-        self.heading = np.asarray(d["heading"]); self.curv = np.asarray(d["curv"]); self.grade = np.asarray(d["grade"])
+        self.x = list(d["x"]); self.y = list(d["y"]); self.z = list(d["z"])
+        self.heading = list(d["heading"]); self.curv = list(d["curv"]); self.grade = list(d["grade"])
         self.n = len(self.x); self.length = float(d.get("length", self.n)); self.step = float(d.get("step", 1.0))
         self.markers = d.get("markers", {}); self.x0 = d.get("x0", 300000.0); self.y0 = d.get("y0", 6100000.0)
 
@@ -30,13 +29,19 @@ class TrackMap:
     # ---- xy -> s --------------------------------------------------------------------------
     def candidates(self, x, y, radius=15.0):
         """All local-minimum ring indices within radius of (x,y): (idx, dist) sorted by dist."""
-        d = np.hypot(self.x - x, self.y - y)
-        near = np.where(d < radius)[0]
-        if len(near) == 0:
-            k = int(np.argmin(d)); return [(k, float(d[k]))]
+        # pure Python on purpose: the node depends only on rclpy + PyYAML (no numpy in the runtime)
+        xs, ys = self.x, self.y
+        d = [math.hypot(xs[i] - x, ys[i] - y) for i in range(self.n)]
+        near = [i for i in range(self.n) if d[i] < radius]
+        if not near:
+            k = min(range(self.n), key=d.__getitem__); return [(k, d[k])]
         # split into contiguous runs (each run = one passing of the track), take best of each
-        runs = np.split(near, np.where(np.diff(near) > 3)[0] + 1)
-        out = [(int(r[np.argmin(d[r])]), float(d[r].min())) for r in runs]
+        runs, cur = [], [near[0]]
+        for i in near[1:]:
+            if i - cur[-1] > 3: runs.append(cur); cur = [i]
+            else: cur.append(i)
+        runs.append(cur)
+        out = [(min(r, key=d.__getitem__), min(d[i] for i in r)) for r in runs]
         # ring wrap: merge first and last run if adjacent
         if len(out) > 1 and out[0][0] < 3 and out[-1][0] > self.n - 4:
             out = [min(out[0], out[-1], key=lambda t: t[1])] + out[1:-1]
