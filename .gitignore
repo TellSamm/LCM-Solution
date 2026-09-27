@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+data/
+cache/
+*.db3
+results/*.parquet
+.DS_Store

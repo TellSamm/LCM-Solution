@@ -1,0 +1,18 @@
+[judge] starting node (tram_id='30618')
+[judge] recording /result/velocity /result/position /result/diagnostics -> /out/30618_0e41eac3_result
+[judge] playing /data/30618_0e41eac3 at rate 1.0 (real time = 1.0) ...
+[judge] node log (last lines):
+[odometry_node-1] [INFO] [1790428322.042912291] [tram_odometry]: rate 35.4 Hz | latency mean 0.55 ms max 1.37 ms | v=0.49 m/s s=4758 m | rejected 0 | init gnss
+[odometry_node-1] [INFO] [1790428332.044323588] [tram_odometry]: rate 35.2 Hz | latency mean 0.55 ms max 1.68 ms | v=0.00 m/s s=4758 m | rejected 0 | init gnss
+[odometry_node-1] [INFO] [1790428342.049049384] [tram_odometry]: rate 36.2 Hz | latency mean 0.58 ms max 1.43 ms | v=0.00 m/s s=4758 m | rejected 0 | init gnss
+[odometry_node-1] [INFO] [1790428352.045630083] [tram_odometry]: rate 36.8 Hz | latency mean 0.56 ms max 1.59 ms | v=0.00 m/s s=4758 m | rejected 0 | init gnss
+[odometry_node-1] [INFO] [1790428362.042487546] [tram_odometry]: rate 27.7 Hz | latency mean 0.57 ms max 1.31 ms | v=0.00 m/s s=4758 m | rejected 0 | init gnss
+[judge] resources: avg cpu 9.6%, max rss 58.7 MB (266 samples)
+[judge] computing metrics vs GNSS reference ...
+[INFO] [1790428365.873986298] [rosbag2_storage]: Opened database '/data/30618_0e41eac3/30618_0e41eac3_0.db3' for READ_ONLY.
+[INFO] [1790428367.222168882] [rosbag2_storage]: Opened database '/out/30618_0e41eac3_result/30618_0e41eac3_result_0.db3' for READ_ONLY.
+recorded: 51303 velocity msgs, 51303 position msgs
+output rate: 38.7 Hz over 1327 s; stamps monotonic: False
+VELOCITY vs GNSS: RMSE 0.042 m/s, MAE 0.027, bias +0.001  (n=51254)
+POSITION vs GNSS (2D, base_link): mean 9.9 m, median 12.7, RMSE 11.2, max 28.3  (matched 100%)
+FINAL error 14.3 m over 5340 m travelled -> drift 0.27%

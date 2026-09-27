@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>tram_odometry</name>
+  <version>0.1.0</version>
+  <description>Model-based backup odometry for an autonomous tram (no GNSS/IMU): speed and position from wheel speeds and driver controller notch.</description>
+  <maintainer email="chernikov.semen21@gmail.com">LCM Solution</maintainer>
+  <license>MIT</license>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tram_vehicle_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <export><build_type>ament_python</build_type></export>
+</package>

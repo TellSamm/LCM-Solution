@@ -1,0 +1,13 @@
+# Independent real-time run by a team member on Windows 11 / Docker Desktop / x86_64, prebuilt image ghcr.io/tellsamm/lcm-odometry
+# Command: ./run.sh judge /c/Users/User/Downloads/data/30618_0e41eac3   (Git Bash), 2026-09-26 21:xx
+[judge] starting node (tram_id='30618')
+[judge] recording /result/velocity /result/position /result/diagnostics -> /out/30618_0e41eac3_result
+[judge] playing /data/30618_0e41eac3 at rate 1.0 (real time = 1.0) ...
+[odometry_node-1] [INFO] [tram_odometry]: rate 35.4 Hz | latency mean 0.42 ms max 1.49 ms | v=0.24 m/s s=4762 m | rejected 0 | init gnss
+[odometry_node-1] [INFO] [tram_odometry]: rate 36.8 Hz | latency mean 0.43 ms max 1.03 ms | v=0.00 m/s s=4762 m | rejected 0 | init gnss
+[judge] resources: avg cpu 6.4%, max rss 59.1 MB (266 samples)
+recorded: 51304 velocity msgs, 51304 position msgs
+output rate: 38.7 Hz over 1327 s
+VELOCITY vs GNSS: RMSE 0.029 m/s, MAE 0.020, bias +0.001  (n=51254)
+POSITION vs GNSS (2D, base_link): mean 12.6 m, median 14.8, RMSE 13.7, max 31.9  (matched 100%)
+FINAL error 18.6 m over 5340 m travelled -> drift 0.35%

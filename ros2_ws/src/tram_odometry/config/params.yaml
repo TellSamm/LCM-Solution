@@ -1,0 +1,26 @@
+tram_odometry:
+  ros__parameters:
+    calib: "auto"            # auto (uses tram_id) | 30618 | 30639 | default
+    tram_id: "30618"         # "30618" (line tram, used by the jury) | "30639" (lab tram) | "" -> default (averaged) calibration
+    default_start: "stop_S"  # start used when no GNSS is available: stop_S | stop_T | A_start | B_start | <metres along ring>
+    gnss_init_seconds: 5.0   # GNSS is only accepted for initial alignment within this window after the first input
+    init_wait: 3.0           # seconds to wait for GNSS before falling back to default_start
+    init_min_fixes: 5
+    frame_id: "map"
+    child_frame_id: "base_link"
+    # Kalman filter / gating
+    q_accel: 1.0             # model acceleration uncertainty, m/s^2 (process noise)
+    r_wheel: 0.10            # wheel-speed measurement noise, m/s
+    gate_sigma: 4.0          # innovation gate, sigmas
+    gate_min: 0.5            # minimum gate, m/s
+    stuck_repeats: 4         # identical wheel samples in a row while speed changes -> frozen sensor
+    stuck_min_pred_change: 0.4
+    reject_timeout: 4.0      # re-accept wheels after this long without any accepted measurement
+    scale_sigma: 0.003       # relative odometry scale uncertainty for position covariance
+    adapt_r: false           # adaptive measurement noise (median of innovations); helps under heavy Gaussian noise, hurts slightly on real data
+    max_gap: 10.0            # s: longest wheel-data gap bridged by the traction model (state is held beyond)
+    publish_on_notch: true   # also publish on controller messages (25 Hz) -> ~45 Hz total
+    gap_fill_rate: 10.0
+    max_predict_gap: 1.0     # s: input dropout up to this is bridged by the model
+    max_hold_gap: 5.0        # s: longer dropout -> last state re-published frozen (status=3), then silence
+    log_period: 10.0
