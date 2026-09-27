@@ -1,0 +1,38 @@
+[INFO] [1790520904.123301509] [hackathon_solution_checker]: Comparing /localization/kinematic_state with velocity=/result/velocity and position=/result/position (sync tolerance 0.050 s)
+[INFO] [1790520934.118239717] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.036828, max=0.182493, n=5517
+[INFO] [1790520934.119144092] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=1.987121, max=4.387385, n=5517, y: RMSE=1.924421, max=2.898736, n=5517, z: RMSE=0.133410, max=0.204270, n=5517, distance: RMSE=2.769448, max=4.427491, n=5517
+[INFO] [1790520964.117324426] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.040438, max=0.182493, n=11361
+[INFO] [1790520964.118989009] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=2.522518, max=4.387385, n=11361, y: RMSE=1.671708, max=3.533560, n=11361, z: RMSE=0.116384, max=0.204270, n=11361, distance: RMSE=3.028407, max=4.723455, n=11361
+[INFO] [1790520994.117140842] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.044950, max=0.263947, n=17121
+[INFO] [1790520994.118888592] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=3.450003, max=7.324890, n=17121, y: RMSE=1.377181, max=3.533560, n=17121, z: RMSE=0.118749, max=0.306299, n=17121, distance: RMSE=3.716618, max=7.355984, n=17121
+[INFO] [1790521024.117594967] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.047691, max=0.263947, n=22744
+[INFO] [1790521024.119237259] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=5.079735, max=10.251694, n=22744, y: RMSE=1.443417, max=3.533560, n=22744, z: RMSE=0.120876, max=0.306299, n=22744, distance: RMSE=5.282213, max=10.286865, n=22744
+[INFO] [1790521054.117952592] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.047754, max=0.263947, n=28177
+[INFO] [1790521054.119598217] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=5.946597, max=10.251694, n=28178, y: RMSE=1.629928, max=3.533560, n=28178, z: RMSE=0.120366, max=0.306299, n=28178, distance: RMSE=6.167103, max=10.286865, n=28178
+[INFO] [1790521084.117425884] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.050732, max=0.314962, n=33850
+[INFO] [1790521084.118802509] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=5.941402, max=10.251694, n=33851, y: RMSE=2.839132, max=7.975839, n=33851, z: RMSE=0.137594, max=0.325944, n=33851, distance: RMSE=6.586339, max=10.286865, n=33851
+[INFO] [1790521114.117214592] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.051166, max=0.314962, n=39814
+[INFO] [1790521114.118325592] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=5.963969, max=10.251694, n=39815, y: RMSE=3.333883, max=8.167286, n=39815, z: RMSE=0.128843, max=0.325944, n=39815, distance: RMSE=6.833762, max=10.286865, n=39815
+[INFO] [1790521144.118595467] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.051295, max=0.314962, n=45786
+[INFO] [1790521144.120443217] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=6.293783, max=10.251694, n=45787, y: RMSE=3.242714, max=8.167286, n=45787, z: RMSE=0.121564, max=0.325944, n=45787, distance: RMSE=7.081078, max=10.286865, n=45787
+[INFO] [1790521173.167553967] [hackathon_solution_checker]: Velocity metrics [m/s]: velocity: RMSE=0.052360, max=0.358576, n=50541
+Failed to publish log message to rosout: publisher's context is invalid, at ./src/rcl/publisher.c:389
+[INFO] [1790521173.168459008] [hackathon_solution_checker]: Position metrics [m]: x: RMSE=6.906896, max=33.241319, n=50542, y: RMSE=4.737344, max=30.369982, n=50542, z: RMSE=0.132461, max=0.489489, n=50542, distance: RMSE=8.376466, max=42.292525, n=50542
+Failed to publish log message to rosout: publisher's context is invalid, at ./src/rcl/publisher.c:389
+Traceback (most recent call last):
+  File "/tmp/checker_ws/install/hackathon_solution_checker/lib/hackathon_solution_checker/metrics", line 33, in <module>
+    sys.exit(load_entry_point('hackathon-solution-checker==0.1.0', 'console_scripts', 'metrics')())
+  File "/tmp/checker_ws/install/hackathon_solution_checker/lib/python3.10/site-packages/hackathon_solution_checker/metrics.py", line 187, in main
+    rclpy.spin(node)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+    executor.spin_once()
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 681, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException
+[ros2run]: Process exited with failure 1

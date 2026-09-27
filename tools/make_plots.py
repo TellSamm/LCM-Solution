@@ -34,7 +34,7 @@ def fig_trajectory(bag="30618_0e41eac3"):
     from evaluate import load_all, reference
     r, O = run_bag(bag, verbose=True); ref = reference(load_all(bag))
     fig, ax = plt.subplots(figsize=(12, 6)); ax.plot(ref.x, ref.y, "k", lw=2, label="GNSS base_link"); ax.plot(O.x, O.y, "r", lw=0.8, label="оценка")
-    ax.set_aspect("equal"); ax.legend(); ax.grid(alpha=.3); ax.set_title(f"Траектория {bag} (UTM 37N − смещение), м"); plt.tight_layout(); plt.savefig(IMG / "trajectory.png", dpi=100); plt.close()
+    ax.set_aspect("equal"); ax.legend(); ax.grid(alpha=.3); ax.set_title(f"Траектория {bag} (UTM 37N - смещение), м"); plt.tight_layout(); plt.savefig(IMG / "trajectory.png", dpi=100); plt.close()
 
 def fig_anomalies(bag="30618_0e41eac3"):
     fig, axs = plt.subplots(2, 2, figsize=(15, 8)); axs = axs.ravel()

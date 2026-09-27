@@ -162,7 +162,7 @@ ros2 launch tram_odometry odometry.launch.py            # tram_id:=30618 по у
 ## Задержка, частота, ресурсы
 
 - Задержка «вход -> публикация» измеряется в ноде (от входа в callback до публикации) и печатается в лог каждые 10 с:
-  `rate 39 Hz | latency mean 0.4 ms max 1.3 ms`. Типично 0.4–0.6 мс, пик < 5 мс (требование <= 100 мс).
+  `rate 39 Hz | latency mean 0.4 ms max 1.3 ms`. Типично 0.4-0.6 мс, пик < 5 мс (требование <= 100 мс).
 - Частота: `ros2 topic hz /result/position` - ~40 Гц (требование >= 10 Гц).
 - Ресурсы: `results/<bag>_resources.log` или `docker stats` - ≈ 10 % одного ядра, ≈ 60 МБ RSS (требование <= 2 ядра, <= 0.5 ГБ).
   `run.sh judge` уже запускает контейнер с `--cpus=2 --memory=512m`.
