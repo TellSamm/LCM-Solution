@@ -23,5 +23,5 @@ kill -INT $REC 2>/dev/null; sleep 2; pkill -INT -f "ros2 bag record" 2>/dev/null
 kill -INT $NODE 2>/dev/null; sleep 2; pkill -TERM -f odometry_node 2>/dev/null || true; pkill -TERM -f "ros2 launch" 2>/dev/null || true
 echo "[judge] инициализация: $(grep -oE "initialized from .*" /out/${NAME}_node.log | head -1 || echo "см. лог")"
 echo "[judge] ресурсы: $(awk '{c+=substr($2,5); m=substr($3,5)+0>m?substr($3,5)+0:m; n++} END {printf "avg cpu %.1f%%, max rss %.1f MB (%d samples)", c/n, m, n}' /out/${NAME}_resources.log)"
-echo "[judge] расчёт метрик относительно GNSS-эталона ..."
+echo "[judge] расчёт метрик относительно эталона из bag ..."
 python3 /tools/eval_recorded.py "$BAG" "$OUT" /out/${NAME}_node.log /out/${NAME}_resources.log 2>&1 | grep -v "^\[INFO\]"
